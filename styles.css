@@ -1,0 +1,633 @@
+/* Modern Minimal Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    line-height: 1.6;
+    color: #ffffff;
+    background: #000000;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 100%;
+    margin: 0;
+    padding-bottom: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
+
+h1 {
+    text-align: left;
+    font-size: 2.5rem;
+    font-weight: 300;
+    color: #ffffff;
+    margin-bottom: 3rem;
+    letter-spacing: -0.5px;
+    align-self: flex-start;
+}
+
+h2 {
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: #ffffff;
+    margin-bottom: 1.5rem;
+}
+
+h3 {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: #000;
+    margin-bottom: 1rem;
+}
+
+/* Original Image Section */
+.original-section {
+    text-align: left;
+    margin-bottom: 3rem;
+    background: #000000;
+    padding: 2rem;
+    align-self: flex-start;
+}
+
+#originalImage {
+    max-width: 300px;
+    transition: transform 0.3s ease;
+}
+
+#originalImage:hover {
+    transform: scale(1.02);
+}
+
+/* Buttons */
+.button-group {
+    text-align: left;
+    margin: 2rem 0;
+    align-self: flex-start;
+}
+
+button {
+    background: #000;
+    color: #fff;
+    border: 0.5px solid #ffffff;
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 0 0.5rem;
+}
+
+button:hover {
+    background: #fff;
+    color: #000;
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+button:disabled {
+    background: #fff;
+    color: #ccc;
+    border-color: #ccc;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.reset-context-button {
+    background: #fff !important;
+    color: #666 !important;
+    border: 2px solid #666 !important;
+    font-size: 0.85rem !important;
+    padding: 0.6rem 1rem !important;
+}
+
+.reset-context-button:hover {
+    background: #666 !important;
+    color: #fff !important;
+    border-color: #666 !important;
+}
+
+/* History Container */
+#historyContainer {
+    margin-top: 2rem;
+}
+
+#historyTitle {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #000;
+}
+
+#generationsHistory {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.generation-item {
+    background: #000000;
+    border: 1px solid #000;
+    border-radius: 16px;
+    padding: 2rem;
+    position: relative;
+}
+
+.generation-item.selected-generation {
+    border-width: 3px;
+    background: #000000;
+}
+
+.generation-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.generation-number {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #000;
+    margin-bottom: 0.5rem;
+}
+
+.selected-variant-indicator {
+    font-size: 0.9rem;
+    color: #666;
+    font-style: italic;
+}
+
+/* Current Generation Container */
+#currentGenerationContainer {
+    background: #000000;
+    padding: 2rem;
+    margin-top: 37.5rem;
+    margin-bottom: 37.5rem;
+    max-width: 100%;
+    position: relative;
+}
+
+/* Original grid layout */
+.variants-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+/* Large horizontal grid layout */
+.variants-grid-large {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+    align-items: start;
+}
+
+.variant-container {
+    background: #000000;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Large variant containers for vertical display */
+.variant-large {
+    background: #000000;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    width: 90%;
+    max-width: 2400px;
+    margin: 0 auto;
+}
+
+.variant-large:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.variant-large.selected {
+    background: #000000;
+}
+
+.variant-large img {
+    width: 100%;
+    max-height: 1200px;
+    object-fit: contain;
+    margin-bottom: 1.5rem;
+}
+
+
+.variant-large .instruction-text {
+    font-size: 1.4rem;
+    font-weight: 400;
+    color: #ffffff;
+    margin: 1.5rem 0;
+    padding: 1rem;
+    line-height: 1.6;
+    max-width: 100%;
+    word-wrap: break-word;
+}
+
+.variant-container:hover {
+    transform: translateY(-5px);
+}
+
+.variant-container.selected {
+    background: #000000;
+}
+
+/* History variants styling */
+.history-variants-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.history-variant {
+    background: #000000;
+    border: 1px solid #000;
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.history-variant.was-selected {
+    border-width: 3px;
+    background: #000000;
+}
+
+.history-variant img {
+    width: 100%;
+    max-height: 300px;
+    object-fit: contain;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    transition: border 0.3s ease;
+}
+
+/* Green border for selected variants in history */
+.history-variant.was-selected img {
+    border: 3px solid #00ff00;
+}
+
+.history-variant p {
+    font-size: 0.8rem;
+    color: #ffffff;
+    margin: 0;
+    line-height: 1.3;
+}
+
+.history-variant h4 {
+    font-size: 1rem;
+    color: #000;
+    margin-bottom: 0.5rem;
+}
+
+.variant-container img {
+    width: 100%;
+    max-height: 500px;
+    object-fit: contain;
+    margin-bottom: 1rem;
+    transition: border 0.3s ease;
+}
+
+.variant-container p {
+    font-size: 0.9rem;
+    color: #000;
+    margin-bottom: 1.5rem;
+    line-height: 1.4;
+}
+
+
+
+.variant-large .choose-button {
+    background: #000000;
+    color: #ffffff;
+    border: 1px solid #ffffff;
+    padding: 1.2rem 2rem;
+    font-size: 1.2rem;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    min-width: 250px;
+}
+
+.variant-large .choose-button:hover {
+    background: #fff;
+    color: #000;
+    transform: translateY(-2px);
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+.choose-button {
+    background: #000;
+    color: #fff;
+    border: 2px solid #000;
+    padding: 0.8rem 1.5rem;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.choose-button:hover {
+    background: #fff;
+    color: #000;
+}
+
+/* Selection Status */
+.selection-status {
+    text-align: center;
+    margin-top: 2rem;
+    padding: 1rem;
+    border-radius: 12px;
+    background: #f0f0f0;
+    border: 1px solid #000;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.selection-status.selected {
+    background: #e0e0e0;
+    color: #000;
+}
+
+
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .variants-grid {
+        gap: 1rem;
+    }
+
+    .variant-container img {
+        max-height: 400px;
+    }
+}
+
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .variants-grid,
+    .history-variants-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .variant-container {
+        padding: 1rem;
+    }
+
+    .variant-container img,
+    .history-variant img {
+        max-height: 350px;
+    }
+
+    .generation-item {
+        padding: 1rem;
+    }
+
+    .generation-number {
+        font-size: 1.1rem;
+    }
+
+    button {
+        padding: 0.8rem 1.5rem;
+        font-size: 0.9rem;
+        margin: 0.25rem;
+    }
+}
+
+/* Instructions Counter */
+.instructions-counter {
+    text-align: center;
+    margin: 1rem 0;
+    padding: 0.5rem 1rem;
+    background: #f0f0f0;
+    border: 1px solid #000;
+    border-radius: 25px;
+    display: inline-block;
+    font-size: 0.9rem;
+    color: #000;
+}
+
+/* Loading dots animation */
+.loading-dots {
+    text-align: left;
+    padding: 3rem;
+    font-size: 2rem;
+    color: #ffffff;
+    align-self: left;
+}
+
+.loading-dots::after {
+    content: '';
+    display: inline-block;
+    animation: dots 1.5s infinite;
+}
+
+@keyframes dots {
+
+    0%,
+    20% {
+        content: '.';
+    }
+
+    40% {
+        content: '..';
+    }
+
+    60%,
+    100% {
+        content: '...';
+    }
+}
+
+.instructions-counter p {
+    margin: 0;
+}
+
+.instructions-counter span {
+    font-weight: bold;
+}
+
+/* Physical Button Status */
+.physical-button-status {
+    text-align: center;
+    margin: 1rem 0;
+    padding: 0.8rem 1rem;
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-family: 'Courier New', monospace;
+}
+
+.physical-button-status p {
+    margin: 0;
+    color: #666;
+    font-weight: 500;
+}
+
+/* Enhanced button feedback for physical buttons */
+.variant-large.physical-button-pressed {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 1);
+    border-color: #ffffff;
+}
+
+/* Vote Counter Styles */
+.vote-counter {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #ffffff;
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    box-shadow: 0 2px 10px rgba(255, 255, 255, 1);
+    backdrop-filter: blur(10px);
+    z-index: 10;
+}
+
+/* Variant containers need relative positioning for vote counter */
+.variant-large {
+    position: relative;
+}
+
+/* Progressive voting visual feedback */
+
+
+/* Image Zoom Modal */
+.zoom-modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
+}
+
+.zoom-modal-content {
+    position: relative;
+    max-width: 95vw;
+    max-height: 95vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.zoom-image {
+    max-width: 100%;
+    max-height: 85vh;
+    object-fit: contain;
+    box-shadow: 0 4px 30px rgba(255, 255, 255, 0.3);
+}
+
+
+
+.zoom-info {
+    margin-top: 15px;
+    text-align: center;
+    color: #ffffff;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px 20px;
+    border-radius: 20px;
+
+}
+
+.zoom-info p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #ffffff;
+}
+
+
+
+/* Zoomable images cursor */
+.zoomable-image {
+    cursor: zoom-in;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.zoomable-image:hover {
+    transform: scale(1.02);
+    opacity: 0.9;
+}
+
+/* Variant images have special cursor and indication */
+#generatedImage1.zoomable-image,
+#generatedImage2.zoomable-image {
+    cursor: pointer;
+    /* Different cursor for voting images */
+}
+
+#generatedImage1.zoomable-image:hover::after,
+#generatedImage2.zoomable-image:hover::after {
+    content: "Double-click to zoom";
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: #4CAF50;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    z-index: 5;
+    border: 1px solid #4CAF50;
+}
+
+/* Smooth Animations */
+* {
+    transition: all 0.3s ease;
+}
+
+img:not(.zoom-image) {
+    transition: transform 0.3s ease;
+}

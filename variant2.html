@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Variant 2</title>
+    <link rel="stylesheet" href="variant.css">
+</head>
+
+<body>
+    <div id="iteration-number" class="iteration-number">#0001</div>
+    <div id="instruction-text" class="instruction-text"></div>
+    <div id="image-container" class="variant-img">
+        <div id="loading-container" class="loading-container" style="display: none;">
+            <div class="loading-text">Mutation incoming...</div>
+            <div class="loading-dots">
+                <div class="loading-dot"></div>
+                <div class="loading-dot"></div>
+                <div class="loading-dot"></div>
+            </div>
+        </div>
+        <img id="variant-image" alt="Variant 2 Image" style="display: none;">
+    </div>
+
+    <script>
+        let lastUpdateTime = 0;
+
+        function updateVariant2View() {
+            try {
+                const variant2Img = localStorage.getItem('variant2_img');
+                const variant2Instruction = localStorage.getItem('variant2_instruction');
+                const generationCount = localStorage.getItem('generationCount') || '1';
+                const isGenerating = localStorage.getItem('isGenerating') === 'true';
+
+                // Update iteration number
+                const formattedNumber = generationCount.padStart(4, '0');
+                document.getElementById('iteration-number').textContent = `#${formattedNumber}`;
+
+                // Update instruction
+                if (variant2Instruction) {
+                    document.getElementById('instruction-text').textContent = variant2Instruction;
+                }
+
+                const loadingContainer = document.getElementById('loading-container');
+                const variantImage = document.getElementById('variant-image');
+
+                if (isGenerating || !variant2Img) {
+                    // Show loading animation
+                    loadingContainer.style.display = 'flex';
+                    variantImage.style.display = 'none';
+                } else {
+                    // Show image
+                    loadingContainer.style.display = 'none';
+                    variantImage.src = variant2Img;
+                    variantImage.style.display = 'block';
+                }
+
+                console.log('Variant 2 updated:', {
+                    hasImage: !!variant2Img,
+                    instruction: variant2Instruction,
+                    isGenerating: isGenerating,
+                    generationCount: generationCount,
+                    imageSize: variant2Img ? variant2Img.length : 0
+                });
+
+            } catch (error) {
+                console.error('Error updating Variant 2:', error);
+            }
+        }
+
+        // Initial update
+        updateVariant2View();
+
+        // Poll for updates every 3 seconds
+        setInterval(updateVariant2View, 3000);
+
+        // Listen for localStorage changes (same-origin)
+        window.addEventListener('storage', function (e) {
+            if (e.key && (e.key.includes('variant2') || e.key === 'generationCount' || e.key === 'isGenerating')) {
+                updateVariant2View();
+            }
+        });
+
+        // For debugging - press '2' to test
+        document.addEventListener('keydown', function (e) {
+            if (e.key === '2') {
+                console.log('Debug: Current localStorage data for Variant 2:', {
+                    variant2_img: localStorage.getItem('variant2_img'),
+                    variant2_instruction: localStorage.getItem('variant2_instruction'),
+                    generationCount: localStorage.getItem('generationCount'),
+                    isGenerating: localStorage.getItem('isGenerating')
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

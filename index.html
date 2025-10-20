@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Self Optimising Exhibition</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/x-icon" href="CircleStart.png">
+    <script src="script.js" defer></script>
+</head>
+
+<body>
+    <div class="container">
+        <h1> The Self Optimising Exhibition</h1>
+
+        <div class="original-section">
+            <h2>Original Image</h2>
+            <img id="originalImage" src="CircleStart.png" alt="Original Circle">
+        </div>
+
+        <div class="button-group">
+            <button id="generateButton">Generate New Image</button>
+            <button id="resetContextButton" class="reset-context-button">Reset Context</button>
+        </div>
+
+        <div id="instructionsCounter" class="instructions-counter" style="display: none;">
+            <p>Available instructions: <span id="instructionsCount">0</span></p>
+        </div>
+
+        <div id="physicalButtonStatusContainer" class="physical-button-status">
+            <p id="physicalButtonStatus">🔍 Checking physical buttons...</p>
+        </div>
+
+        <div id="variant-links" class="variant-links">
+            <h3>View Variants:</h3>
+            <button class="variant-link-btn" onclick="window.open('variant1.html', '_blank')">Variant 1</button>
+            <button class="variant-link-btn" onclick="window.open('variant2.html', '_blank')">Variant 2</button>
+        </div>
+        <div id="historyContainer">
+            <h2 id="historyTitle" style="display: none;">Generation History</h2>
+            <div id="generationsHistory"></div>
+        </div>
+
+        <div id="currentGenerationContainer" style="display: none;">
+
+            <div id="variantsContent" style="display: none;">
+                <div class="variants-grid-large">
+                    <div id="variant1Container" class="variant-large">
+                        <div id="generationLoading1" class="loading-dots" style="display: none;">
+                            Generating new image
+                        </div>
+                        <img id="generatedImage1" alt="Generated Image 1">
+                        <p id="usedInstruction1" class="instruction-text"></p>
+                        <!--<button id="chooseVariant1" class="choose-button">Choose & Generate Next</button>-->
+                    </div>
+                    <div id="variant2Container" class="variant-large">
+                        <div id="generationLoading2" class="loading-dots" style="display: none;">
+                            Generating new images
+                        </div>
+                        <img id="generatedImage2" alt="Generated Image 2">
+                        <p id="usedInstruction2" class="instruction-text"></p>
+                        <!--<button id="chooseVariant2" class="choose-button">Choose & Generate Next</button>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Zoom Modal -->
+    <div id="imageZoomModal" class="zoom-modal" style="display: none;">
+        <div class="zoom-modal-content">
+            <img id="zoomedImage" class="zoom-image" alt="Zoomed Image">
+            <div class="zoom-info">
+                <p id="zoomImageInfo"></p>
+            </div>
+        </div>
+    </div>
+
+    </div>
+</body>
+
+</html>
