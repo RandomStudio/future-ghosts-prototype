@@ -72,10 +72,13 @@ def handle_button_event(button_num, channel):
 async def broadcast(message):
     """Send message to all connected clients"""
     if clients:
+        print("Sending message to connected clients")
         await asyncio.gather(
             *[client.send(message) for client in clients],
             return_exceptions=True
         )
+        print("Sent message")
+        print(f"{message}")
 
 async def websocket_handler(websocket, path):
     """Handle WebSocket connections"""
