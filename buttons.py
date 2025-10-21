@@ -67,6 +67,7 @@ def handle_button_event(button_num, channel):
     print(f"[{time.strftime('%H:%M:%S')}] Button {button_num}: {event_type}")
     
     # Broadcast to all connected WebSocket clients (synchronously)
+    print("Now broadcast!")
     broadcast(json.dumps(message))
 
 def broadcast(message):
@@ -82,7 +83,7 @@ def broadcast(message):
         except:
             pass  # Client disconnected, ignore
 
-async def websocket_handler(websocket, path):
+async def websocket_handler(websocket):
     """Handle WebSocket connections"""
     clients.add(websocket)
     print(f"✅ Client connected (total: {len(clients)})")
