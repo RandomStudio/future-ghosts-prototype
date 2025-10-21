@@ -1251,6 +1251,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     initializeImageZoom();
 
     // Initialize physical button status check
-    const socket = new WebSocket(`ws://${RASPBERRY_PI_BASE_URL}`);
+    const socket = new WebSocket(RASPBERRY_PI_BASE_URL);
     socket.onmessage = handleMessageFromWebSocket;
 });
