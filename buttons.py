@@ -67,7 +67,7 @@ def handle_button_event(button_num, channel):
     print(f"[{time.strftime('%H:%M:%S')}] Button {button_num}: {event_type}")
     
     # Broadcast to all connected WebSocket clients (synchronously)
-    self.broadcast(json.dumps(message))
+    broadcast(json.dumps(message))
 
 def broadcast(message):
     """Send message to all connected clients"""
