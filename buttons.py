@@ -66,19 +66,19 @@ def handle_button_event(button_num, channel):
     
     print(f"[{time.strftime('%H:%M:%S')}] Button {button_num}: {event_type}")
     
-    # Broadcast to all connected WebSocket clients
-    asyncio.run(broadcast(json.dumps(message)))
+    # Broadcast to all connected WebSocket clients (synchronously)
+    broadcast(json.dumps(message))
 
-async def broadcast(message):
+def broadcast(message):
     """Send message to all connected clients"""
-    if clients:
-        print("Sending message to connected clients")
-        await asyncio.gather(
-            *[client.send(message) for client in clients],
-            return_exceptions=True
-        )
-        print("Sent message")
-        print(f"{message}")
+    for client in list(clients):
+        try:
+            asyncio.run_coroutine_threadsafe(
+                client.send(message), 
+                asyncio.get_event_loop()
+            )
+        except:
+            pass  # Client disconnected, ignore
 
 async def websocket_handler(websocket, path):
     """Handle WebSocket connections"""
