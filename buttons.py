@@ -8,21 +8,19 @@ Pin Configuration:
 - Button 2: GPIO19 (Physical pin 35)
 
 Requirements:
-- pip3 install websockets --break-system-packages
+- pip3 install simple-websocket-server --break-system-packages
 
 Usage:
 sudo python3 buttons.py
 """
 
 import RPi.GPIO as GPIO
-import asyncio
-import websockets
 import json
 import time
-from pathlib import Path
 from http.server import SimpleHTTPRequestHandler
 from socketserver import TCPServer
 from threading import Thread
+from simple_websocket_server import WebSocketServer, WebSocket
 
 # Configuration
 BUTTON_1_PIN = 18
@@ -31,7 +29,30 @@ WS_PORT = 8765
 HTTP_PORT = 8000
 
 # Connected WebSocket clients
-clients = set()
+clients = []
+
+class ButtonWebSocket(WebSocket):
+    def handle(self):
+        """Handle incoming messages"""
+        pass  # We only send, don't need to handle incoming
+    
+    def connected(self):
+        """Called when client connects"""
+        clients.append(self)
+        print(f"✅ Client connected (total: {len(clients)})")
+        
+        # Send connection confirmation
+        self.send_message(json.dumps({
+            "event": "CONNECTED",
+            "message": "Button server ready",
+            "timestamp": time.time()
+        }))
+    
+    def handle_close(self):
+        """Called when client disconnects"""
+        if self in clients:
+            clients.remove(self)
+        print(f"❌ Client disconnected (total: {len(clients)})")
 
 def setup_gpio():
     """Initialize GPIO pins"""
@@ -66,60 +87,25 @@ def handle_button_event(button_num, channel):
     
     print(f"[{time.strftime('%H:%M:%S')}] Button {button_num}: {event_type}")
     
-    # Broadcast to all connected WebSocket clients (synchronously)
-    print("Now broadcast!")
+    # Broadcast to all connected WebSocket clients
     broadcast(json.dumps(message))
 
 def broadcast(message):
     """Send message to all connected clients"""
-    for client in list(clients):
+    for client in clients[:]:  # Copy list to avoid modification during iteration
         try:
-            print("Sending message to connected clients")
-            asyncio.run_coroutine_threadsafe(
-                client.send(message), 
-                asyncio.get_event_loop()
-            )
-            print("Sent message")
+            client.send_message(message)
         except:
-            pass  # Client disconnected, ignore
+            # Client disconnected, remove it
+            if client in clients:
+                clients.remove(client)
 
-async def websocket_handler(websocket):
-    """Handle WebSocket connections"""
-    clients.add(websocket)
-    print(f"✅ Client connected (total: {len(clients)})")
-    
-    try:
-        # Send initial connection confirmation
-        await websocket.send(json.dumps({
-            "event": "CONNECTED",
-            "message": "Button server ready",
-            "timestamp": time.time()
-        }))
-        
-        # Keep connection alive
-        async for message in websocket:
-            pass  # Echo or handle client messages if needed
-            
-    except websockets.exceptions.ConnectionClosed:
-        pass
-    finally:
-        clients.remove(websocket)
-        print(f"❌ Client disconnected (total: {len(clients)})")
-
-async def start_websocket_server():
+def start_websocket_server():
     """Start the WebSocket server"""
-    # WebSocket server with permissive settings - no origin checking
-    async with websockets.serve(
-        websocket_handler, 
-        "0.0.0.0", 
-        WS_PORT,
-        # Allow all origins, no restrictions
-        origins=None,
-        compression=None
-    ):
-        print(f"🌐 WebSocket server running on ws://0.0.0.0:{WS_PORT}")
-        print(f"   CORS: Fully open, all origins allowed")
-        await asyncio.Future()  # Run forever
+    server = WebSocketServer('0.0.0.0', WS_PORT, ButtonWebSocket)
+    print(f"🌐 WebSocket server running on ws://0.0.0.0:{WS_PORT}")
+    print(f"   CORS: Fully open, all origins allowed")
+    server.serve_forever()
 
 def start_http_server():
     """Start simple HTTP server for static files"""
@@ -159,14 +145,19 @@ def main():
     http_thread = Thread(target=start_http_server, daemon=True)
     http_thread.start()
     
+    # Start WebSocket server in background thread
+    ws_thread = Thread(target=start_websocket_server, daemon=True)
+    ws_thread.start()
+    
     print(f"\n✨ Server ready!")
     print(f"   HTTP: http://0.0.0.0:{HTTP_PORT} (CORS: fully open)")
     print(f"   WebSocket: ws://0.0.0.0:{WS_PORT} (CORS: fully open)")
     print(f"\nPress Ctrl+C to exit\n")
     
-    # Start WebSocket server (blocks)
+    # Keep main thread alive
     try:
-        asyncio.run(start_websocket_server())
+        while True:
+            time.sleep(1)
     except KeyboardInterrupt:
         print("\n\n👋 Shutting down...")
         GPIO.cleanup()
