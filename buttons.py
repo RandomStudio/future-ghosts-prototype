@@ -102,8 +102,17 @@ async def websocket_handler(websocket, path):
 
 async def start_websocket_server():
     """Start the WebSocket server"""
-    async with websockets.serve(websocket_handler, "0.0.0.0", WS_PORT):
+    # WebSocket server with permissive settings - no origin checking
+    async with websockets.serve(
+        websocket_handler, 
+        "0.0.0.0", 
+        WS_PORT,
+        # Allow all origins, no restrictions
+        origins=None,
+        compression=None
+    ):
         print(f"🌐 WebSocket server running on ws://0.0.0.0:{WS_PORT}")
+        print(f"   CORS: Fully open, all origins allowed")
         await asyncio.Future()  # Run forever
 
 def start_http_server():
@@ -111,6 +120,19 @@ def start_http_server():
     class Handler(SimpleHTTPRequestHandler):
         def log_message(self, format, *args):
             pass  # Suppress log messages
+        
+        def end_headers(self):
+            # Add CORS headers to all responses
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.send_header('Access-Control-Allow-Methods', '*')
+            self.send_header('Access-Control-Allow-Headers', '*')
+            self.send_header('Cache-Control', 'no-store, no-cache, must-revalidate')
+            super().end_headers()
+        
+        def do_OPTIONS(self):
+            # Handle preflight requests
+            self.send_response(200)
+            self.end_headers()
     
     with TCPServer(("0.0.0.0", HTTP_PORT), Handler) as httpd:
         print(f"📁 HTTP server running on http://0.0.0.0:{HTTP_PORT}")
@@ -132,8 +154,8 @@ def main():
     http_thread.start()
     
     print(f"\n✨ Server ready!")
-    print(f"   HTTP: http://0.0.0.0:{HTTP_PORT}")
-    print(f"   WebSocket: ws://0.0.0.0:{WS_PORT}")
+    print(f"   HTTP: http://0.0.0.0:{HTTP_PORT} (CORS: fully open)")
+    print(f"   WebSocket: ws://0.0.0.0:{WS_PORT} (CORS: fully open)")
     print(f"\nPress Ctrl+C to exit\n")
     
     # Start WebSocket server (blocks)
