@@ -1243,9 +1243,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('generateButton').addEventListener('click', generateImage);
 
     // Test Raspberry Pi connection on page load
-    document.getElementById('resetContextButton').addEventListener('click', resetContext);
-    document.getElementById('chooseVariant1').addEventListener('click', chooseVariant1);
-    document.getElementById('chooseVariant2').addEventListener('click', chooseVariant2);
+    // document.getElementById('resetContextButton').addEventListener('click', resetContext);
+    // document.getElementById('chooseVariant1').addEventListener('click', chooseVariant1);
+    // document.getElementById('chooseVariant2').addEventListener('click', chooseVariant2);
 
     // Initialize image zoom functionality
     initializeImageZoom();
