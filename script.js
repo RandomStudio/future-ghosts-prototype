@@ -14,8 +14,8 @@ const VOTES_REQUIRED = 3; // Number of clicks needed to proceed
 
 // Raspberry Pi configuration
 const RASPBERRY_PI_IP = '10.112.20.53';
-const RASPBERRY_PI_PORT = '5000';
-const RASPBERRY_PI_BASE_URL = `http://${RASPBERRY_PI_IP}:${RASPBERRY_PI_PORT}`;
+const RASPBERRY_PI_PORT = '8765';
+const RASPBERRY_PI_BASE_URL = `ws://${RASPBERRY_PI_IP}:${RASPBERRY_PI_PORT}`;
 
 // Retry configuration constants
 const MAX_RETRY_ATTEMPTS = 3;
@@ -732,9 +732,6 @@ async function chooseVariant1() {
 async function chooseVariant2() {
     try {
         // Show physical button feedback if triggered by physical button
-        if (window.physicalButtonsAvailable) {
-            showPhysicalButtonFeedback('variant2');
-        }
 
         // Increment vote count
         variant2Votes++;
@@ -1024,40 +1021,28 @@ async function checkPhysicalButton() {
 }
 
 // Check for physical button presses every 500ms 
-setInterval(checkPhysicalButton, 500);
+//setInterval(checkPhysicalButton, 500);
 
-// Function to check and display physical button status
-async function updatePhysicalButtonStatus() {
-    try {
-        const response = await fetch(`${RASPBERRY_PI_BASE_URL}/button-status`);
-        const data = await response.json();
+const handleMessageFromWebSocket = (socketMessage) => {
+    const { data } = socketMessage;
+    const {event, button} = JSON.parse(data);
 
-        // Update UI to show physical button availability
-        const statusElement = document.getElementById('physicalButtonStatus');
-        if (statusElement) {
-            const status = data.gpio_setup ?
-                '🟢 Physical buttons connected (Raspberry Pi)' :
-                '🔴 Physical buttons not available';
-            statusElement.textContent = status;
-            statusElement.style.color = data.gpio_setup ? '#4CAF50' : '#666';
+    if (event === 'PRESSED') {
+        console.log('Physical button pressed: Button', button);
+        if (button === 1) {
+            showPhysicalButtonFeedback('variant1');
+            chooseVariant1();
+        } else if (button === 2) {
+            showPhysicalButtonFeedback('variant2');
+            chooseVariant2();
+        } else {
+            console.warn("Unknown button?", button)
         }
-
-        // Store physical button availability for other functions
-        window.physicalButtonsAvailable = data.gpio_setup;
-
-    } catch (error) {
-        // Physical buttons not available
-        const statusElement = document.getElementById('physicalButtonStatus');
-        if (statusElement) {
-            statusElement.textContent = '🔴 Physical buttons not available';
-            statusElement.style.color = '#666';
-        }
-        window.physicalButtonsAvailable = false;
+    } else if (event === 'RELEASED') {}
+    else {
+        console.warn('UNKNOWN MESSAGE FROM SOCKET', event, button, data);
     }
 }
-
-// Check physical button status every 5 seconds
-setInterval(updatePhysicalButtonStatus, 5000);
 
 // Test connection to Raspberry Pi (useful for debugging)
 async function testRaspberryPiConnection() {
@@ -1258,7 +1243,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('generateButton').addEventListener('click', generateImage);
 
     // Test Raspberry Pi connection on page load
-    setTimeout(testRaspberryPiConnection, 2000); // Wait 2 seconds after page load
     document.getElementById('resetContextButton').addEventListener('click', resetContext);
     document.getElementById('chooseVariant1').addEventListener('click', chooseVariant1);
     document.getElementById('chooseVariant2').addEventListener('click', chooseVariant2);
@@ -1267,5 +1251,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     initializeImageZoom();
 
     // Initialize physical button status check
-    await updatePhysicalButtonStatus();
+    const socket = new WebSocket(`ws://${RASPBERRY_PI_BASE_URL}`);
+    socket.onmessage = handleMessageFromWebSocket;
 });
