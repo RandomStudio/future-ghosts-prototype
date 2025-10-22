@@ -352,10 +352,10 @@ async function generateImage() {
         const rejectedImageBase64 = await imageToBase64(rejectedImageSrc);
 
         // Validate base64 data
-        if (!imageBase64 || imageBase64.length < 100) {
+        if (!selectedImageBase64 || selectedImageBase64.length < 100) {
             throw new Error('Invalid image data - base64 conversion failed');
         }
-        console.log('Base64 conversion successful, size:', imageBase64.length, 'chars');
+        console.log('Base64 conversion successful, size:', selectedImageBase64.length, 'chars');
 
         // Get API key (ask only once, then store it)
         if (!storedApiKey) {
@@ -389,10 +389,10 @@ async function generateImage() {
         document.getElementById('usedInstruction2').dataset.originalInstruction = instruction2;
 
         // Generate first variant with retry mechanism
-        const variant1Promise = generateSingleVariantWithRetry(imageBase64, instruction1, storedApiKey, rejectedImageBase64);
+        const variant1Promise = generateSingleVariantWithRetry(selectedImageBase64, instruction1, storedApiKey, rejectedImageBase64);
 
         // Generate second variant with retry mechanism
-        const variant2Promise = generateSingleVariantWithRetry(imageBase64, instruction2, storedApiKey, rejectedImageBase64);
+        const variant2Promise = generateSingleVariantWithRetry(selectedImageBase64, instruction2, storedApiKey, rejectedImageBase64);
 
         // Wait for both variants to complete
         const [variant1Result, variant2Result] = await Promise.all([variant1Promise, variant2Promise]);
