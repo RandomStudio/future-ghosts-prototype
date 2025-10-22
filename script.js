@@ -554,6 +554,7 @@ async function generateSingleVariant(imageBase64, instruction, apiKey, rejectedI
         console.log('Making API request to Gemini...');
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=${apiKey}`, {
             method: 'POST',
+            cache: 'no-cache',
             headers: {
                 'Content-Type': 'application/json',
             },
