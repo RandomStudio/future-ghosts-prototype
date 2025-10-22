@@ -1,5 +1,6 @@
 let instructions = [];
-let currentImageSrc = 'CircleStart.png'; // Track the current image source
+let selectedImageSrc = 'CircleStart.png'; // Track the current image source
+let rejectedImageSrc = 'CircleStart.png'; // Track the current image source
 let generationCount = 0; // Track iteration number
 let storedApiKey = null; // Store API key to avoid asking every time
 let variantChosen = false; // Track if user has chosen a variant
@@ -346,8 +347,9 @@ async function generateImage() {
         saveToLocalStorage('generationCount', generationCount.toString());
 
         // Convert current image to base64 (iterative: use last generated or original)
-        console.log('Converting image to base64, source:', currentImageSrc);
-        const imageBase64 = await imageToBase64(currentImageSrc);
+        console.log('Converting image to base64, source:', selectedImageSrc, rejectedImageSrc);
+        const selectedImageBase64 = await imageToBase64(selectedImageSrc);
+        const rejectedImageBase64 = await imageToBase64(rejectedImageSrc);
 
         // Validate base64 data
         if (!imageBase64 || imageBase64.length < 100) {
@@ -387,10 +389,10 @@ async function generateImage() {
         document.getElementById('usedInstruction2').dataset.originalInstruction = instruction2;
 
         // Generate first variant with retry mechanism
-        const variant1Promise = generateSingleVariantWithRetry(imageBase64, instruction1, storedApiKey);
+        const variant1Promise = generateSingleVariantWithRetry(imageBase64, instruction1, storedApiKey, rejectedImageBase64);
 
         // Generate second variant with retry mechanism
-        const variant2Promise = generateSingleVariantWithRetry(imageBase64, instruction2, storedApiKey);
+        const variant2Promise = generateSingleVariantWithRetry(imageBase64, instruction2, storedApiKey, rejectedImageBase64);
 
         // Wait for both variants to complete
         const [variant1Result, variant2Result] = await Promise.all([variant1Promise, variant2Promise]);
@@ -515,24 +517,30 @@ async function generateImage() {
 }
 
 // Generate a single variant
-async function generateSingleVariant(imageBase64, instruction, apiKey) {
+async function generateSingleVariant(imageBase64, instruction, apiKey, rejectedImageBase64) {
     try {
         console.log('Generating variant with instruction:', instruction);
         console.log('Image data size:', imageBase64.length, 'chars');
 
-        const fullPrompt = `${instruction}. Modify this image according to the instruction`;
+        const fullPrompt = `Modify the first image according to the following instruction: ${instruction}. The generated image should NEVER look the same as either of the provided images.`;
 
         const requestBody = {
             contents: [{
                 parts: [
                     {
-                        text: fullPrompt
-                    },
-                    {
                         inline_data: {
                             mime_type: "image/png",
                             data: imageBase64
                         }
+                    },
+                    {
+                        inline_data: {
+                            mime_type: "image/png",
+                            data: rejectedImageBase64
+                        }
+                    },
+                    {
+                        text: fullPrompt
                     }
                 ]
             }],
@@ -619,11 +627,11 @@ async function generateSingleVariant(imageBase64, instruction, apiKey) {
 // RETRY WRAPPER FUNCTION
 // ========================
 
-async function generateSingleVariantWithRetry(imageBase64, instruction, apiKey, attemptNumber = 1) {
+async function generateSingleVariantWithRetry(imageBase64, instruction, apiKey, rejectedImageBase64, attemptNumber = 1) {
     try {
         console.log(`Generation attempt ${attemptNumber}/${MAX_RETRY_ATTEMPTS} for instruction: "${instruction.substring(0, 50)}..."`);
 
-        return await generateSingleVariant(imageBase64, instruction, apiKey);
+        return await generateSingleVariant(imageBase64, instruction, apiKey, rejectedImageBase64);
     } catch (error) {
         console.error(`Attempt ${attemptNumber} failed:`, error.message);
 
@@ -643,7 +651,7 @@ async function generateSingleVariantWithRetry(imageBase64, instruction, apiKey, 
             await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
 
             // Recursive retry
-            return await generateSingleVariantWithRetry(imageBase64, instruction, apiKey, attemptNumber + 1);
+            return await generateSingleVariantWithRetry(imageBase64, instruction, apiKey, rejectedImageBase64, attemptNumber + 1);
         } else {
             // If it's not a retryable error or we've exceeded max attempts, throw the error
             throw error;
@@ -676,7 +684,7 @@ async function chooseVariant1() {
         if (variant1Votes >= VOTES_REQUIRED) {
             console.log('✅ Variant 1 has enough votes! Proceeding...');
 
-            currentImageSrc = variant1Data;
+            selectedImageSrc = variant1Data;
             variantChosen = true;
 
             // Remove the instruction from variant 2 (not chosen) from future use
@@ -744,7 +752,7 @@ async function chooseVariant2() {
         if (variant2Votes >= VOTES_REQUIRED) {
             console.log('✅ Variant 2 has enough votes! Proceeding...');
 
-            currentImageSrc = variant2Data;
+            selectedImageSrc = variant2Data;
             variantChosen = true;
 
             // Remove the instruction from variant 1 (not chosen) from future use
@@ -928,7 +936,7 @@ function resetContext() {
         }
 
         // Reset all variables to initial state
-        currentImageSrc = 'CircleStart.png';
+        selectedImageSrc = 'CircleStart.png';
         generationCount = 0;
         variantChosen = false;
         variant1Data = null;
